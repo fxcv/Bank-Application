@@ -3,6 +3,8 @@ package me.springprojects.bankapplication.entity;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
+
+import java.math.BigDecimal;
 import java.util.List;
 
 @Entity
@@ -20,6 +22,7 @@ public class User {
     private boolean locked;
     private String email;
     private String password;
+    private BigDecimal balance;
 
     @OneToMany(mappedBy = "operationOwner")
     private List<Operation> operations;
