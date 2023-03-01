@@ -1,8 +1,7 @@
 package me.springprojects.bankapplication.entity;
 
 import jakarta.persistence.*;
-import lombok.Builder;
-import lombok.Getter;
+import lombok.*;
 
 import java.time.LocalDate;
 
@@ -10,13 +9,15 @@ import java.time.LocalDate;
 @Table(name = "debit_cards")
 @Getter
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class DebitCard {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
     @Column(name = "debit_card_number")
-    private int debitCardNumber;
+    private long debitCardNumber;
     @Column(name = "verification_number")
     private int verificationNumber;
     @Column(name = "exp_date")

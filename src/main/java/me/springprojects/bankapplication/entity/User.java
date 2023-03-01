@@ -1,8 +1,7 @@
 package me.springprojects.bankapplication.entity;
 
 import jakarta.persistence.*;
-import lombok.Builder;
-import lombok.Getter;
+import lombok.*;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -10,6 +9,8 @@ import java.util.List;
 @Entity
 @Getter
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class User {
 
     @Id
@@ -18,7 +19,7 @@ public class User {
     private String name;
     private String lastname;
     @Column(name = "account_number")
-    private int accountNumber;
+    private long accountNumber;
     private boolean locked;
     private String email;
     private String password;

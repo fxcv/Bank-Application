@@ -13,8 +13,9 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         return httpSecurity.httpBasic().and().authorizeHttpRequests()
-                .anyRequest().denyAll()
-                .and().build();
+                .anyRequest().permitAll()
+                .and().csrf().disable() //for development process
+                .build();
     }
 
     @Bean

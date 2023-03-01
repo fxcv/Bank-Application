@@ -1,8 +1,7 @@
 package me.springprojects.bankapplication.entity;
 
 import jakarta.persistence.*;
-import lombok.Builder;
-import lombok.Getter;
+import lombok.*;
 import me.springprojects.bankapplication.entity.enums.Action;
 
 import java.math.BigDecimal;
@@ -11,6 +10,8 @@ import java.math.BigDecimal;
 @Table(name = "operations")
 @Getter
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Operation {
 
     @Id
