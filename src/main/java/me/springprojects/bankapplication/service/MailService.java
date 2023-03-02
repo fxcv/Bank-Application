@@ -11,7 +11,7 @@ public class MailService {
 
     private final JavaMailSender mailSender;
     private final String[] subjects = {"Money Withdrawal", "Money Deposit", "Money Transfer", "Account Creation"};
-    private final String[] texts = {"You have withdrawned an amount of: ", "You have deposited an amount of: ", "You have transferred an amount of: ", "You have successfully created a bank account."};
+    private final String[] texts = {"You have withdrawned an amount of: ", "You have deposited an amount of: ", "You have transferred an amount of: ", "You have successfully created a bank account.", "You have received an amount of: "};
 
     public MailService(JavaMailSender mailSender){
         this.mailSender = mailSender;
@@ -33,12 +33,17 @@ public class MailService {
         mailSender.send(mail);
     }
 
-    public void sendTransferMail(String to, BigDecimal amount){
-        SimpleMailMessage mail = new SimpleMailMessage();
-        mail.setSubject(subjects[2]);
-        mail.setText(texts[2] + amount);
-        mail.setTo(to);
-        mailSender.send(mail);
+    public void sendTransferMail(String from, String to,  BigDecimal amount){
+        SimpleMailMessage mailToTransferer = new SimpleMailMessage();
+        SimpleMailMessage mailToReceiver = new SimpleMailMessage();
+        mailToTransferer.setSubject(subjects[2]);
+        mailToReceiver.setSubject(subjects[2]);
+        mailToTransferer.setText(texts[3] + amount);
+        mailToReceiver.setText(texts[4] + amount);
+        mailToTransferer.setTo(from);
+        mailToReceiver.setTo(to);
+        mailSender.send(mailToTransferer);
+        mailSender.send(mailToReceiver);
     }
 
     public void sendAccountCreationMail(String to){

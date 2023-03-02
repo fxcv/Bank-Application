@@ -8,6 +8,7 @@ import java.util.List;
 
 @Entity
 @Getter
+@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -24,9 +25,6 @@ public class User {
     private String email;
     private String password;
     private BigDecimal balance;
-
-    @OneToMany(mappedBy = "operationOwner")
-    private List<Operation> operations;
 
     @OneToMany(mappedBy = "cardOwner")
     private List<DebitCard> cards;

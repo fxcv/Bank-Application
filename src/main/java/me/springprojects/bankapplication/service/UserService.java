@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import me.springprojects.bankapplication.entity.Authority;
 import me.springprojects.bankapplication.entity.User;
 import me.springprojects.bankapplication.entity.dto.UserDTO;
+import me.springprojects.bankapplication.exceptions.InvalidInputDataException;
 import me.springprojects.bankapplication.repository.AuthorityRepository;
 import me.springprojects.bankapplication.repository.UserRepository;
 import me.springprojects.bankapplication.service.verification.UserServiceVerification;
@@ -42,7 +43,6 @@ public class UserService {
                 .email(userDTO.getEmail())
                 .password(userDTO.getPassword())
                 .balance(BigDecimal.ZERO)
-                .operations(new ArrayList<>())
                 .cards(new ArrayList<>())
                 .authorities(new ArrayList<>())
                 .build();
@@ -70,5 +70,42 @@ public class UserService {
                                            return userDTO;
                                        })
                                        .collect(Collectors.toList());
+    }
+
+    @Transactional(rollbackOn = RuntimeException.class)
+    public void depositMoney(BigDecimal amount){
+        User loggedUser = userUtil.getUserFromSecurityContext(); // should return logged-in user
+
+        loggedUser.setBalance(loggedUser.getBalance().add(amount));
+
+        userRepository.save(loggedUser);
+        mailService.sendDepositMail(loggedUser.getEmail(), amount);
+    }
+
+    @Transactional(rollbackOn = RuntimeException.class)
+    public void withdrawMoney(BigDecimal amount){
+        User loggedUser = userUtil.getUserFromSecurityContext(); // should return logged-in user
+
+        userServiceVerification.verificateUserBalance(loggedUser.getBalance(), amount);
+
+        loggedUser.setBalance(loggedUser.getBalance().subtract(amount));
+
+        userRepository.save(loggedUser);
+        mailService.sendWithdrawalMail(loggedUser.getEmail(), amount);
+    }
+
+    @Transactional(rollbackOn = RuntimeException.class)
+    public void transferMoney(BigDecimal amount, String receiverId){
+        User loggedUser = userUtil.getUserFromSecurityContext(); // should return logged-in user
+        User receiver = userRepository.findById(receiverId).orElseThrow(() -> new InvalidInputDataException("Receiver not found."));
+
+        userServiceVerification.verificateUserBalance(loggedUser.getBalance(), amount);
+
+        loggedUser.setBalance(loggedUser.getBalance().subtract(amount));
+        receiver.setBalance(receiver.getBalance().add(amount));
+
+        userRepository.save(loggedUser);
+        userRepository.save(receiver);
+        mailService.sendTransferMail(loggedUser.getEmail(), receiver.getEmail(), amount);
     }
 }

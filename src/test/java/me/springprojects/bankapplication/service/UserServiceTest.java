@@ -16,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.*;
@@ -144,7 +145,6 @@ class UserServiceTest {
                 .locked(false)
                 .authorities(new ArrayList<>())
                 .cards(new ArrayList<>())
-                .operations(new ArrayList<>())
                 .build();
         given(userRepository.findAll()).willReturn(List.of(user));
 
@@ -159,5 +159,87 @@ class UserServiceTest {
         assertEquals(user.getEmail(), resUser.getEmail());
         assertEquals(user.getPassword(), resUser.getPassword());
         assertEquals(BigDecimal.ZERO, resUser.getBalance());
+    }
+
+    @Test
+    public void successfullyDepositsMoney(){
+        User user = User.builder()
+                .name("Alice")
+                .lastname("May")
+                .balance(BigDecimal.ZERO)
+                .build();
+        given(userUtil.getUserFromSecurityContext()).willReturn(user);
+
+        userService.depositMoney(BigDecimal.TEN);
+
+        verify(userRepository, times(1)).save(any());
+        verify(mailService, times(1)).sendDepositMail(any(), any());
+        assertEquals(BigDecimal.TEN, user.getBalance());
+    }
+
+    @Test
+    public void successfullyWithdrawsMoney(){
+        User user = User.builder()
+                .name("Alice")
+                .lastname("May")
+                .balance(BigDecimal.TEN)
+                .build();
+        given(userUtil.getUserFromSecurityContext()).willReturn(user);
+
+        userService.withdrawMoney(BigDecimal.TEN);
+
+        verify(userRepository, times(1)).save(any());
+        verify(mailService, times(1)).sendWithdrawalMail(any(), any());
+        assertEquals(BigDecimal.ZERO, user.getBalance());
+    }
+
+    @Test
+    public void successfullyTransfersMoney(){
+        User transferer = User.builder()
+                .name("Alice")
+                .lastname("May")
+                .balance(BigDecimal.TEN)
+                .build();
+        User receiver = User.builder()
+                .name("Tom")
+                .lastname("May")
+                .balance(BigDecimal.TEN)
+                .build();
+        given(userUtil.getUserFromSecurityContext()).willReturn(transferer);
+        given(userRepository.findById(any())).willReturn(Optional.of(receiver));
+
+        userService.transferMoney(BigDecimal.TEN, "");
+
+        verify(userRepository, times(2)).save(any());
+        verify(mailService, times(1)).sendTransferMail(any(), any(), any());
+        assertEquals(BigDecimal.ZERO, transferer.getBalance());
+        assertEquals(BigDecimal.valueOf(20), receiver.getBalance());
+    }
+
+    @Test
+    public void throwsExceptionIfReceiverNotFound(){
+        User transferer = User.builder()
+                .name("Alice")
+                .lastname("May")
+                .balance(BigDecimal.TEN)
+                .build();
+        given(userUtil.getUserFromSecurityContext()).willReturn(transferer);
+        given(userRepository.findById(any())).willReturn(Optional.empty());
+
+        assertThrows(InvalidInputDataException.class, () -> userService.transferMoney(BigDecimal.TEN, ""));
+    }
+
+    @Test
+    public void throwsExceptionIfUserHasNotEnoughMoney(){
+        User user = User.builder()
+                .name("Alice")
+                .lastname("May")
+                .balance(BigDecimal.TEN)
+                .build();
+        given(userUtil.getUserFromSecurityContext()).willReturn(user);
+        given(userRepository.findById(any())).willReturn(Optional.of(new User()));
+
+        assertThrows(InvalidInputDataException.class, () -> userService.withdrawMoney(BigDecimal.valueOf(1000)));
+        assertThrows(InvalidInputDataException.class, () -> userService.transferMoney(BigDecimal.valueOf(1000), ""));
     }
 }

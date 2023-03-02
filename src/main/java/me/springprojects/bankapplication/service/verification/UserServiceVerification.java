@@ -6,6 +6,7 @@ import me.springprojects.bankapplication.exceptions.InvalidInputDataException;
 import me.springprojects.bankapplication.repository.UserRepository;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -55,5 +56,9 @@ public class UserServiceVerification {
     private void verificateUserPassword(String password){
         Matcher match = VALID_PASSWORD_PATTERN.matcher(password);
         if(!match.find()) throw new InvalidInputDataException("Please provide correct password.");
+    }
+
+    public void verificateUserBalance(BigDecimal balance, BigDecimal amount){
+        if(amount.longValue() > balance.longValue()) throw new InvalidInputDataException("You do not have enough balance");
     }
 }
