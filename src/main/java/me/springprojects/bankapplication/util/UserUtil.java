@@ -18,6 +18,6 @@ public class UserUtil {
         String userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
         Optional<User> user = userRepository.getUserByEmail(userEmail);
 
-        return user.get(); //should never be null
+        return user.get(); // should never be null
     }
 }

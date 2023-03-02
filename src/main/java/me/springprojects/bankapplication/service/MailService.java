@@ -10,8 +10,8 @@ import java.math.BigDecimal;
 public class MailService {
 
     private final JavaMailSender mailSender;
-    private final String[] subjects = {"Money Withdrawal", "Money Deposit", "Money Transfer"};
-    private final String[] texts = {"You have withdrawned an amount of: ", "You have deposited an amount of: ", "You have transferred an amount of: "};
+    private final String[] subjects = {"Money Withdrawal", "Money Deposit", "Money Transfer", "Account Creation"};
+    private final String[] texts = {"You have withdrawned an amount of: ", "You have deposited an amount of: ", "You have transferred an amount of: ", "You have successfully created a bank account."};
 
     public MailService(JavaMailSender mailSender){
         this.mailSender = mailSender;
@@ -37,6 +37,14 @@ public class MailService {
         SimpleMailMessage mail = new SimpleMailMessage();
         mail.setSubject(subjects[2]);
         mail.setText(texts[2] + amount);
+        mail.setTo(to);
+        mailSender.send(mail);
+    }
+
+    public void sendAccountCreationMail(String to){
+        SimpleMailMessage mail = new SimpleMailMessage();
+        mail.setSubject(subjects[3]);
+        mail.setText(texts[3]);
         mail.setTo(to);
         mailSender.send(mail);
     }

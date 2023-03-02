@@ -4,7 +4,6 @@ import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import me.springprojects.bankapplication.entity.Authority;
 import me.springprojects.bankapplication.entity.User;
-import me.springprojects.bankapplication.entity.dto.DebitCardDTO;
 import me.springprojects.bankapplication.entity.dto.UserDTO;
 import me.springprojects.bankapplication.repository.AuthorityRepository;
 import me.springprojects.bankapplication.repository.UserRepository;
@@ -29,10 +28,11 @@ public class UserService {
     private final SeparatorUtil separator;
     private final UserServiceVerification userServiceVerification;
     private final AuthorityRepository authorityRepository;
+    private final MailService mailService;
 
     @Transactional(rollbackOn = RuntimeException.class)
     public ResponseEntity<UserDTO> createUser(UserDTO userDTO){
-        //todo verification
+        userServiceVerification.verificateInputUserData(userDTO);
 
         User user = User.builder()
                 .name(userDTO.getName())
@@ -52,6 +52,7 @@ public class UserService {
 
         userRepository.save(user);
         authorityRepository.save(userAuthority);
+        mailService.sendAccountCreationMail(user.getEmail());
         return ResponseEntity.status(HttpStatus.CREATED).body(userDTO);
     }
 

@@ -21,7 +21,7 @@ public class SecurityUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Optional<User> user = userRepository.getUserByEmail(username); //login by email
+        Optional<User> user = userRepository.getUserByEmail(username); // login by email
         return user.map(u -> new SecurityUserDetails(u, passwordEncoder))
                    .orElseThrow();
     }
