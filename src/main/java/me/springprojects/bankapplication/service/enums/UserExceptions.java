@@ -1,0 +1,5 @@
+package me.springprojects.bankapplication.service.enums;
+
+public enum UserExceptions {
+    NOT_ENOUGH_DATA, INCORRECT_NAME, INCORRECT_LASTNAME, INCORRECT_EMAIL, USER_EXISTS, INCORRECT_PASSWORD, NOT_ENOUGH_BALANCE, INCORRECT_ACCOUNT_NUMBER
+}

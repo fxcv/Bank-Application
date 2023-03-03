@@ -19,17 +19,11 @@ public class SeparatorUtil {
     }
 
     public long joinTheNumber(String num){
-
-        StringBuilder formatted = new StringBuilder();
-        for(char c : num.toCharArray()){ // get int compatible string
+        StringBuilder out = new StringBuilder();
+        for(char c : num.toCharArray()){
             if(!Character.isDigit(c)) continue;
-            formatted.append(c);
+            out.append(c);
         }
-        long out = 0;
-        for(String s : formatted.toString().split("")){ // get an int from string
-            int n = Integer.parseInt(s);
-            out = out * 10 + n;
-        }
-        return out;
+        return Long.parseLong(out.toString());
     }
 }

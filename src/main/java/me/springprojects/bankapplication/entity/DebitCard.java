@@ -18,8 +18,6 @@ public class DebitCard {
     private String id;
     @Column(name = "debit_card_number")
     private long debitCardNumber;
-    @Column(name = "verification_number")
-    private int verificationNumber;
     @Column(name = "exp_date")
     private LocalDate expDate;
 
