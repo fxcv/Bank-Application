@@ -9,7 +9,6 @@ import me.springprojects.bankapplication.exceptions.InvalidInputDataException;
 import me.springprojects.bankapplication.repository.AuthorityRepository;
 import me.springprojects.bankapplication.repository.UserRepository;
 import me.springprojects.bankapplication.service.verification.UserServiceVerification;
-import me.springprojects.bankapplication.util.SeparatorUtil;
 import me.springprojects.bankapplication.util.UserUtil;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,7 +25,6 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final UserUtil userUtil;
-    private final SeparatorUtil separator;
     private final UserServiceVerification userServiceVerification;
     private final AuthorityRepository authorityRepository;
     private final MailService mailService;
@@ -38,7 +36,7 @@ public class UserService {
         User user = User.builder()
                 .name(userDTO.getName())
                 .lastname(userDTO.getLastname())
-                .accountNumber(separator.joinTheNumber(userDTO.getAccountNumber()))
+                .accountNumber(userDTO.getAccountNumber())
                 .locked(false)
                 .email(userDTO.getEmail())
                 .password(userDTO.getPassword())
@@ -61,7 +59,7 @@ public class UserService {
                                            UserDTO userDTO = UserDTO.builder()
                                                    .name(user.getName())
                                                    .lastname(user.getLastname())
-                                                   .accountNumber(separator.separateTheNumberPerFour(user.getAccountNumber()))
+                                                   .accountNumber(user.getAccountNumber())
                                                    .email(user.getEmail())
                                                    .password(user.getPassword())
                                                    .balance(user.getBalance())
@@ -78,7 +76,7 @@ public class UserService {
         loggedUser.setBalance(loggedUser.getBalance().add(amount));
 
         userRepository.save(loggedUser);
-        mailService.sendDepositMail(loggedUser.getEmail(), amount);
+        mailService.sendDepositMail(loggedUser.getEmail());
     }
 
     @Transactional(rollbackOn = RuntimeException.class)
@@ -90,7 +88,7 @@ public class UserService {
         loggedUser.setBalance(loggedUser.getBalance().subtract(amount));
 
         userRepository.save(loggedUser);
-        mailService.sendWithdrawalMail(loggedUser.getEmail(), amount);
+        mailService.sendWithdrawalMail(loggedUser.getEmail());
     }
 
     @Transactional(rollbackOn = RuntimeException.class)
@@ -105,6 +103,6 @@ public class UserService {
 
         userRepository.save(loggedUser);
         userRepository.save(receiver);
-        mailService.sendTransferMail(loggedUser.getEmail(), receiver.getEmail(), amount);
+        mailService.sendTransferMail(loggedUser.getEmail());
     }
 }

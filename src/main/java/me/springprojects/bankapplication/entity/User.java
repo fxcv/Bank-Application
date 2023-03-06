@@ -20,7 +20,7 @@ public class User extends Auditable{
     private String name;
     private String lastname;
     @Column(name = "account_number")
-    private long accountNumber;
+    private String accountNumber;
     private boolean locked;
     private String email;
     private String password;

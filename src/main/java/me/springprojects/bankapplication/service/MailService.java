@@ -1,5 +1,6 @@
 package me.springprojects.bankapplication.service;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
@@ -7,49 +8,47 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 
 @Service
+@RequiredArgsConstructor
 public class MailService {
 
     private final JavaMailSender mailSender;
-    private final String[] subjects = {"Money Withdrawal", "Money Deposit", "Money Transfer", "Account Creation"};
-    private final String[] texts = {"You have withdrawned an amount of: ", "You have deposited an amount of: ", "You have transferred an amount of: ", "You have successfully created a bank account.", "You have received an amount of: "};
+    private final static String WITHDRAWAL_SUBJECT = "Money Withdrawal";
+    private final static String WITHDRAWAL_TEXT = "You have successfully withdrawn money!";
+    private final static String DEPOSIT_SUBJECT = "Money Deposit";
+    private final static String DEPOSIT_TEXT = "You have successfully deposited money!";
+    private final static String TRANSFER_SUBJECT = "Money Transfer";
+    private final static String TRANSFER_TEXT = "You have successfully transferred money!";
+    private final static String REGISTRATION_SUBJECT = "Account Creation";
+    private final static String REGISTRATION_TEXT = "You have successfully registered an account!";
 
-    public MailService(JavaMailSender mailSender){
-        this.mailSender = mailSender;
-    }
-
-    public void sendWithdrawalMail(String to, BigDecimal amount){
+    public void sendWithdrawalMail(String to){
         SimpleMailMessage mail = new SimpleMailMessage();
-        mail.setSubject(subjects[0]);
-        mail.setText(texts[0] + amount);
+        mail.setSubject(WITHDRAWAL_SUBJECT);
+        mail.setText(WITHDRAWAL_TEXT);
         mail.setTo(to);
         mailSender.send(mail);
     }
 
-    public void sendDepositMail(String to, BigDecimal amount){
+    public void sendDepositMail(String to){
         SimpleMailMessage mail = new SimpleMailMessage();
-        mail.setSubject(subjects[1]);
-        mail.setText(texts[1] + amount);
+        mail.setSubject(DEPOSIT_SUBJECT);
+        mail.setText(DEPOSIT_TEXT);
         mail.setTo(to);
         mailSender.send(mail);
     }
 
-    public void sendTransferMail(String from, String to,  BigDecimal amount){
-        SimpleMailMessage mailToTransferer = new SimpleMailMessage();
-        SimpleMailMessage mailToReceiver = new SimpleMailMessage();
-        mailToTransferer.setSubject(subjects[2]);
-        mailToReceiver.setSubject(subjects[2]);
-        mailToTransferer.setText(texts[3] + amount);
-        mailToReceiver.setText(texts[4] + amount);
-        mailToTransferer.setTo(from);
-        mailToReceiver.setTo(to);
-        mailSender.send(mailToTransferer);
-        mailSender.send(mailToReceiver);
+    public void sendTransferMail(String to){
+        SimpleMailMessage mail = new SimpleMailMessage();
+        mail.setSubject(TRANSFER_SUBJECT);
+        mail.setText(TRANSFER_TEXT);
+        mail.setTo(to);
+        mailSender.send(mail);
     }
 
     public void sendAccountCreationMail(String to){
         SimpleMailMessage mail = new SimpleMailMessage();
-        mail.setSubject(subjects[3]);
-        mail.setText(texts[3]);
+        mail.setSubject(REGISTRATION_SUBJECT);
+        mail.setText(REGISTRATION_TEXT);
         mail.setTo(to);
         mailSender.send(mail);
     }

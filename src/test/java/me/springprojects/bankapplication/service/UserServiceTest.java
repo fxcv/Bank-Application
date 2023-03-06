@@ -7,7 +7,6 @@ import me.springprojects.bankapplication.exceptions.InvalidInputDataException;
 import me.springprojects.bankapplication.repository.AuthorityRepository;
 import me.springprojects.bankapplication.repository.UserRepository;
 import me.springprojects.bankapplication.service.verification.UserServiceVerification;
-import me.springprojects.bankapplication.util.SeparatorUtil;
 import me.springprojects.bankapplication.util.UserUtil;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -27,9 +26,8 @@ class UserServiceTest {
     private final MailService mailService = mock(MailService.class);
     private final UserRepository userRepository = mock(UserRepository.class);
     private final AuthorityRepository authorityRepository = mock(AuthorityRepository.class);
-    private final SeparatorUtil separator = new SeparatorUtil();
     private final UserServiceVerification userServiceVerification = new UserServiceVerification(userRepository);
-    private final UserService userService = new UserService(userRepository, userUtil, separator, userServiceVerification, authorityRepository, mailService);
+    private final UserService userService = new UserService(userRepository, userUtil, userServiceVerification, authorityRepository, mailService);
 
     @Test
     public void throwsExceptionWhenMissingInputData(){
@@ -138,7 +136,7 @@ class UserServiceTest {
         User user = User.builder()
                 .name("Alice")
                 .lastname("May")
-                .accountNumber(separator.joinTheNumber("1234 5678 9087"))
+                .accountNumber("1234 5678 9087")
                 .email("email@gmail.com")
                 .password("password")
                 .balance(BigDecimal.ZERO)
@@ -172,7 +170,7 @@ class UserServiceTest {
         userService.depositMoney(BigDecimal.TEN);
 
         verify(userRepository, times(1)).save(any());
-        verify(mailService, times(1)).sendDepositMail(any(), any());
+        verify(mailService, times(1)).sendDepositMail(any());
         assertEquals(BigDecimal.TEN, user.getBalance());
     }
 
@@ -188,7 +186,7 @@ class UserServiceTest {
         userService.withdrawMoney(BigDecimal.TEN);
 
         verify(userRepository, times(1)).save(any());
-        verify(mailService, times(1)).sendWithdrawalMail(any(), any());
+        verify(mailService, times(1)).sendWithdrawalMail(any());
         assertEquals(BigDecimal.ZERO, user.getBalance());
     }
 
@@ -210,7 +208,7 @@ class UserServiceTest {
         userService.transferMoney(BigDecimal.TEN, "");
 
         verify(userRepository, times(2)).save(any());
-        verify(mailService, times(1)).sendTransferMail(any(), any(), any());
+        verify(mailService, times(1)).sendTransferMail(any());
         assertEquals(BigDecimal.ZERO, transferer.getBalance());
         assertEquals(BigDecimal.valueOf(20), receiver.getBalance());
     }

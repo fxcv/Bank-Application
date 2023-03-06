@@ -10,7 +10,7 @@
     To start this application a mysql database on localhost:3306 with the following tables is needed:  
         - user  
         - authority  
-        - debit_cards
+        - operations
         - user_authority  
     Database connection and mail configuration must be established in application.properties file  
 # Endpoints
