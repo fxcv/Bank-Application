@@ -42,7 +42,7 @@ class UserServiceTest {
                 .balance(null)
                 .build();
 
-        assertThrows(InvalidInputDataException.class, () -> userService.createUser(userDTO));
+        assertThrows(InvalidInputDataException.class, () -> userService.registerUser(userDTO));
     }
 
     @Test
@@ -55,7 +55,7 @@ class UserServiceTest {
                 .password("password")
                 .build();
 
-        assertThrows(InvalidInputDataException.class, () -> userService.createUser(userDTO));
+        assertThrows(InvalidInputDataException.class, () -> userService.registerUser(userDTO));
     }
 
     @Test
@@ -68,7 +68,7 @@ class UserServiceTest {
                 .password("password")
                 .build();
 
-        assertThrows(InvalidInputDataException.class, () -> userService.createUser(userDTO));
+        assertThrows(InvalidInputDataException.class, () -> userService.registerUser(userDTO));
     }
 
     @Test
@@ -81,7 +81,7 @@ class UserServiceTest {
                 .password("password")
                 .build();
 
-        assertThrows(InvalidInputDataException.class, () -> userService.createUser(userDTO));
+        assertThrows(InvalidInputDataException.class, () -> userService.registerUser(userDTO));
     }
 
     @Test
@@ -94,7 +94,7 @@ class UserServiceTest {
                 .password("password")
                 .build();
 
-        assertThrows(InvalidInputDataException.class, () -> userService.createUser(userDTO));
+        assertThrows(InvalidInputDataException.class, () -> userService.registerUser(userDTO));
     }
 
     @Test
@@ -107,7 +107,7 @@ class UserServiceTest {
                 .password("badpass")
                 .build();
 
-        assertThrows(InvalidInputDataException.class, () -> userService.createUser(userDTO));
+        assertThrows(InvalidInputDataException.class, () -> userService.registerUser(userDTO));
     }
 
     @Test
@@ -125,7 +125,7 @@ class UserServiceTest {
                 .build();
         given(authorityRepository.findAuthorityByName(any())).willReturn(authority);
 
-        ResponseEntity<UserDTO> res = userService.createUser(userDTO);
+        ResponseEntity<UserDTO> res = userService.registerUser(userDTO);
 
         verify(mailService, times(1)).sendAccountCreationMail(any());
         verify(userRepository, times(1)).save(any());
@@ -144,7 +144,6 @@ class UserServiceTest {
                 .balance(BigDecimal.ZERO)
                 .locked(false)
                 .authorities(new ArrayList<>())
-                .cards(new ArrayList<>())
                 .build();
         given(userRepository.findAll()).willReturn(List.of(user));
 

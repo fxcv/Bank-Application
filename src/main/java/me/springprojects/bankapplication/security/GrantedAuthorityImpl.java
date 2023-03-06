@@ -5,7 +5,7 @@ import me.springprojects.bankapplication.entity.Authority;
 import org.springframework.security.core.GrantedAuthority;
 
 @AllArgsConstructor
-public class SecurityGrantedAuthority implements GrantedAuthority {
+public class GrantedAuthorityImpl implements GrantedAuthority {
 
     private final Authority authority;
 

@@ -32,7 +32,7 @@ public class UserService {
     private final MailService mailService;
 
     @Transactional(rollbackOn = RuntimeException.class)
-    public ResponseEntity<UserDTO> createUser(UserDTO userDTO){
+    public ResponseEntity<UserDTO> registerUser(UserDTO userDTO){
         userServiceVerification.verificateInputUserData(userDTO);
 
         User user = User.builder()
@@ -43,7 +43,6 @@ public class UserService {
                 .email(userDTO.getEmail())
                 .password(userDTO.getPassword())
                 .balance(BigDecimal.ZERO)
-                .cards(new ArrayList<>())
                 .authorities(new ArrayList<>())
                 .build();
         Authority userAuthority = authorityRepository.findAuthorityByName("ROLE_USER"); // should always exist in the database
@@ -52,7 +51,7 @@ public class UserService {
 
         userRepository.save(user);
         authorityRepository.save(userAuthority);
-        mailService.sendAccountCreationMail(user.getEmail());
+        /*mailService.sendAccountCreationMail(user.getEmail());*/
         return ResponseEntity.status(HttpStatus.CREATED).body(userDTO);
     }
 

@@ -16,9 +16,9 @@ public class UserController {
 
     private final UserService userService;
 
-    @PostMapping(path = "/add")
-    public ResponseEntity<UserDTO> createUser(@RequestBody UserDTO userDTO){
-        return userService.createUser(userDTO);
+    @PostMapping(path = "/register")
+    public ResponseEntity<UserDTO> registerUser(@RequestBody UserDTO userDTO){
+        return userService.registerUser(userDTO);
     }
 
     @GetMapping(path = "/all")

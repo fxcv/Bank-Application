@@ -10,7 +10,7 @@ import java.util.Collection;
 import java.util.stream.Collectors;
 
 @AllArgsConstructor
-public class SecurityUserDetails implements UserDetails {
+public class UserDetailsImpl implements UserDetails {
 
     private final User user;
     private final PasswordEncoder passwordEncoder;
@@ -18,7 +18,7 @@ public class SecurityUserDetails implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return user.getAuthorities().stream()
-                                    .map(SecurityGrantedAuthority::new)
+                                    .map(GrantedAuthorityImpl::new)
                                     .collect(Collectors.toList());
     }
 
@@ -50,5 +50,9 @@ public class SecurityUserDetails implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
+    }
+
+    public User getUser() {
+        return user;
     }
 }

@@ -12,7 +12,7 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class User {
+public class User extends Auditable{
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -25,9 +25,6 @@ public class User {
     private String email;
     private String password;
     private BigDecimal balance;
-
-    @OneToMany(mappedBy = "cardOwner")
-    private List<DebitCard> cards;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "user_authority", joinColumns = @JoinColumn(name = "user_id"),

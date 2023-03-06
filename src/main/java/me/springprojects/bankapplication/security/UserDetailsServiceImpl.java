@@ -14,7 +14,7 @@ import java.util.Optional;
 
 @Service
 @AllArgsConstructor
-public class SecurityUserDetailsService implements UserDetailsService {
+public class UserDetailsServiceImpl implements UserDetailsService {
 
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
@@ -22,7 +22,7 @@ public class SecurityUserDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Optional<User> user = userRepository.getUserByEmail(username); // login by email
-        return user.map(u -> new SecurityUserDetails(u, passwordEncoder))
+        return user.map(u -> new UserDetailsImpl(u, passwordEncoder))
                    .orElseThrow();
     }
 }
