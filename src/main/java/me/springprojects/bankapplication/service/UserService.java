@@ -49,7 +49,7 @@ public class UserService {
 
         userRepository.save(user);
         authorityRepository.save(userAuthority);
-        /*mailService.sendAccountCreationMail(user.getEmail());*/
+        mailService.sendAccountCreationMail(user.getEmail());
         return ResponseEntity.status(HttpStatus.CREATED).body(userDTO);
     }
 
