@@ -8,10 +8,9 @@ import me.springprojects.bankapplication.entity.dto.UserDTO;
 import me.springprojects.bankapplication.exceptions.InvalidInputDataException;
 import me.springprojects.bankapplication.repository.AuthorityRepository;
 import me.springprojects.bankapplication.repository.UserRepository;
+import me.springprojects.bankapplication.service.enums.UserExceptions;
 import me.springprojects.bankapplication.service.verification.UserServiceVerification;
 import me.springprojects.bankapplication.util.UserUtil;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -30,7 +29,7 @@ public class UserService {
     private final MailService mailService;
 
     @Transactional(rollbackOn = RuntimeException.class)
-    public ResponseEntity<UserDTO> registerUser(UserDTO userDTO){
+    public UserDTO registerUser(UserDTO userDTO){
         userServiceVerification.verificateInputUserData(userDTO);
 
         User user = User.builder()
@@ -50,7 +49,7 @@ public class UserService {
         userRepository.save(user);
         authorityRepository.save(userAuthority);
         mailService.sendAccountCreationMail(user.getEmail());
-        return ResponseEntity.status(HttpStatus.CREATED).body(userDTO);
+        return userDTO;
     }
 
     public List<UserDTO> getAllUsers(){
@@ -93,7 +92,7 @@ public class UserService {
     @Transactional(rollbackOn = RuntimeException.class)
     public void transferMoney(BigDecimal amount, String receiverId){
         User loggedUser = userUtil.getUserFromSecurityContext(); // should return logged-in user
-        User receiver = userRepository.findById(receiverId).orElseThrow(() -> new InvalidInputDataException("Receiver not found."));
+        User receiver = userRepository.findById(receiverId).orElseThrow(() -> new InvalidInputDataException(UserExceptions.RECEIVER_NOT_FOUND));
         userServiceVerification.verificateUserBalance(loggedUser.getBalance(), amount);
         synchronized (this){
             loggedUser.setBalance(loggedUser.getBalance().subtract(amount));

@@ -9,9 +9,6 @@ import me.springprojects.bankapplication.repository.UserRepository;
 import me.springprojects.bankapplication.service.verification.UserServiceVerification;
 import me.springprojects.bankapplication.util.UserUtil;
 import org.junit.jupiter.api.Test;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -127,12 +124,12 @@ class UserServiceTest {
                 .build();
         given(authorityRepository.findAuthorityByName(any())).willReturn(authority);
 
-        ResponseEntity<UserDTO> res = userService.registerUser(userDTO);
+        UserDTO res = userService.registerUser(userDTO);
 
         verify(mailService, times(1)).sendAccountCreationMail(any());
         verify(userRepository, times(1)).save(any());
         verify(authorityRepository, times(1)).save(any());
-        assertEquals(HttpStatus.CREATED, res.getStatusCode());
+        assertEquals(userDTO, res);
     }
 
     @Test

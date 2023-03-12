@@ -1,7 +1,9 @@
 package me.springprojects.bankapplication.util;
 
 import me.springprojects.bankapplication.entity.User;
+import me.springprojects.bankapplication.exceptions.InvalidInputDataException;
 import me.springprojects.bankapplication.security.UserDetailsImpl;
+import me.springprojects.bankapplication.service.enums.UserExceptions;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
@@ -13,6 +15,6 @@ public class UserUtil {
         if(principal instanceof UserDetailsImpl userDetails){
             return userDetails.getUser();
         }
-        throw new RuntimeException(); //todo
+        throw new InvalidInputDataException(UserExceptions.AUTH_REQUIRED);
     }
 }
