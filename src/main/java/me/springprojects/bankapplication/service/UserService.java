@@ -72,9 +72,9 @@ public class UserService {
     @Transactional(rollbackOn = RuntimeException.class)
     public void depositMoney(BigDecimal amount){
         User loggedUser = userUtil.getUserFromSecurityContext(); // should return logged-in user
-
-        loggedUser.setBalance(loggedUser.getBalance().add(amount));
-
+        synchronized(this){
+            loggedUser.setBalance(loggedUser.getBalance().add(amount));
+        }
         userRepository.save(loggedUser);
         mailService.sendDepositMail(loggedUser.getEmail());
     }
@@ -82,11 +82,10 @@ public class UserService {
     @Transactional(rollbackOn = RuntimeException.class)
     public void withdrawMoney(BigDecimal amount){
         User loggedUser = userUtil.getUserFromSecurityContext(); // should return logged-in user
-
         userServiceVerification.verificateUserBalance(loggedUser.getBalance(), amount);
-
-        loggedUser.setBalance(loggedUser.getBalance().subtract(amount));
-
+        synchronized (this){
+            loggedUser.setBalance(loggedUser.getBalance().subtract(amount));
+        }
         userRepository.save(loggedUser);
         mailService.sendWithdrawalMail(loggedUser.getEmail());
     }
@@ -95,12 +94,11 @@ public class UserService {
     public void transferMoney(BigDecimal amount, String receiverId){
         User loggedUser = userUtil.getUserFromSecurityContext(); // should return logged-in user
         User receiver = userRepository.findById(receiverId).orElseThrow(() -> new InvalidInputDataException("Receiver not found."));
-
         userServiceVerification.verificateUserBalance(loggedUser.getBalance(), amount);
-
-        loggedUser.setBalance(loggedUser.getBalance().subtract(amount));
-        receiver.setBalance(receiver.getBalance().add(amount));
-
+        synchronized (this){
+            loggedUser.setBalance(loggedUser.getBalance().subtract(amount));
+            receiver.setBalance(receiver.getBalance().add(amount));
+        }
         userRepository.save(loggedUser);
         userRepository.save(receiver);
         mailService.sendTransferMail(loggedUser.getEmail());

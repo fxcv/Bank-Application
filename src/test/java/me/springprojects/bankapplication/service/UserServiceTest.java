@@ -16,6 +16,9 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.stream.IntStream;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.*;
@@ -28,6 +31,7 @@ class UserServiceTest {
     private final AuthorityRepository authorityRepository = mock(AuthorityRepository.class);
     private final UserServiceVerification userServiceVerification = new UserServiceVerification(userRepository);
     private final UserService userService = new UserService(userRepository, userUtil, userServiceVerification, authorityRepository, mailService);
+    private final ExecutorService executorService = Executors.newFixedThreadPool(3);
 
     @Test
     public void throwsExceptionWhenMissingInputData(){
@@ -238,5 +242,57 @@ class UserServiceTest {
 
         assertThrows(InvalidInputDataException.class, () -> userService.withdrawMoney(BigDecimal.valueOf(1000)));
         assertThrows(InvalidInputDataException.class, () -> userService.transferMoney(BigDecimal.valueOf(1000), ""));
+    }
+
+    @Test
+    public void checkIfMultiThreadingWorksCorrectly() throws InterruptedException {
+        User user = new User();
+        user.setBalance(BigDecimal.ZERO);
+        given(userUtil.getUserFromSecurityContext()).willReturn(user);
+
+        IntStream.range(0, 1000).forEach(num -> {
+            executorService.submit(() -> {
+                userService.depositMoney(BigDecimal.ONE);
+            });
+        });
+        Thread.sleep(1000);
+
+        assertEquals(BigDecimal.valueOf(1000), user.getBalance());
+    }
+
+    @Test
+    public void checkIfMultiThreadingWorksCorrectly2() throws InterruptedException {
+        User user = new User();
+        user.setBalance(BigDecimal.valueOf(1000));
+        given(userUtil.getUserFromSecurityContext()).willReturn(user);
+
+        IntStream.range(0, 1000).forEach(num -> {
+            executorService.submit(() -> {
+                userService.withdrawMoney((BigDecimal.ONE));
+            });
+        });
+        Thread.sleep(1000);
+
+        assertEquals(BigDecimal.valueOf(0), user.getBalance());
+    }
+
+    @Test
+    public void checkIfMultiThreadingWorksCorrectly3() throws InterruptedException {
+        User user = new User();
+        user.setBalance(BigDecimal.valueOf(1000));
+        User receiver = new User();
+        receiver.setBalance(BigDecimal.valueOf(5000));
+        given(userUtil.getUserFromSecurityContext()).willReturn(user);
+        given(userRepository.findById(any())).willReturn(Optional.of(receiver));
+
+        IntStream.range(0, 1000).forEach(num -> {
+            executorService.submit(() -> {
+                userService.transferMoney(BigDecimal.ONE, "");
+            });
+        });
+        Thread.sleep(1000);
+
+        assertEquals(BigDecimal.valueOf(0), user.getBalance());
+        assertEquals(BigDecimal.valueOf(6000), receiver.getBalance());
     }
 }
